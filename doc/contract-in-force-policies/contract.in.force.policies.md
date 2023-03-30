@@ -110,7 +110,7 @@ Although `xsd:datatime` supports specifying timezones, UTC should be used. It is
 
 If no period is specified the contract agreement is interpreted as having an indefinite in force period and will remain valid until its other constraints evaluate to false.
 
-## Not Before and Until
+## 4. Not Before and Until
 
 `Not Before` and `Until` semantics can be defined by specifying a single `cx:inForceDate` fixed date constraint and an appropriate operand. For example the following policy
 defines a contact is not in force before `January 1, 2023`:
