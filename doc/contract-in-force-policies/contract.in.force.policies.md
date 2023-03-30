@@ -112,7 +112,7 @@ If no period is specified the contract agreement is interpreted as having an ind
 
 ## 4. Not Before and Until
 
-`Not Before` and `Until` semantics can be defined by specifying a single `cx:inForceDate` fixed date constraint and an appropriate operand. For example the following policy
+`Not Before` and `Until` semantics can be defined by specifying a single `cx:inForceDate` fixed date constraint and an appropriate operand. For example, the following policy
 defines a contact is not in force before `January 1, 2023`:
 
  ```json
