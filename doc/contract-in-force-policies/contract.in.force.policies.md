@@ -8,7 +8,7 @@ All dates must be expressed as UTC.
 A duration is a period of time starting from an offset. Catena-X defines a simple expression language of type `cx:dateExpression` for specifying the offset and duration in time
 units:
 
-```<offset> + <numeric value> ms|s|m|h|d```
+```<offset> + <numeric value>ms|s|m|h|d```
 
 The following values are supported for `<offset>`:
 
