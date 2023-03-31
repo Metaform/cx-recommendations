@@ -1,6 +1,6 @@
-# Contract In Force Policies Specification
+# Contract In Force Policy Specification
 
-This document defines interoperable policies for specifying in force periods for contract agreements. An in force period can be defined as a __duration__ or a __fixed date__.
+This document defines an interoperable policy for specifying in force periods for contract agreements. An in force period can be defined as a __duration__ or a __fixed date__.
 All dates must be expressed as UTC.
 
 ## 1. Duration
