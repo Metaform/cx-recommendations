@@ -12,9 +12,9 @@ units:
 
 The following values are supported for `<offset>`:
 
-| Value                      | Description                                                                                                                              |
-|----------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| contractAgreementFinalized | The start of the contract agreement defined as the timestamp when the provider enters the FINALIZED state expressed in UTC epoch seconds |
+| Value             | Description                                                                                                                           |
+|-------------------|---------------------------------------------------------------------------------------------------------------------------------------|
+| contractAgreement | The start of the contract agreement defined as the timestamp when the provider enters the AGREED state expressed in UTC epoch seconds |
 
 The following values are supported for the time unit:
 
@@ -45,7 +45,7 @@ A duration is defined in a `ContractDefinition` using the following policy and `
             "leftOperand": "cx:inForceDate",
             "operator": "gte",
             "rightOperand": {
-              "@value": "contractAgreementFinalized",
+              "@value": "contractAgreement",
               "@type": "cx:dateExpression"
             }
           },
@@ -53,7 +53,7 @@ A duration is defined in a `ContractDefinition` using the following policy and `
             "leftOperand": "cx:inForceDate",
             "operator": "lte",
             "rightOperand": {
-              "@value": "contractAgreementFinalized + 100d",
+              "@value": "contractAgreement + 100d",
               "@type": "cx:dateExpression"
             }
           }

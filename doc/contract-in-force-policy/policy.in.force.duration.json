@@ -14,7 +14,7 @@
             "leftOperand": "cx:inForceDate",
             "operator": "gte",
             "rightOperand": {
-              "@value": "contractAgreementFinalized",
+              "@value": "contractAgreement",
               "@type": "cx:dateExpression"
             }
           },
@@ -22,7 +22,7 @@
             "leftOperand": "cx:inForceDate",
             "operator": "lte",
             "rightOperand": {
-              "@value": "contractAgreementFinalized + 100d",
+              "@value": "contractAgreement + 100d",
               "@type": "cx:dateExpression"
             }
           }
