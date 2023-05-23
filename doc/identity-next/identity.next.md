@@ -19,7 +19,7 @@ A separate document will provide a technical design for implementing this specif
 # 3. Catena-X Identity
 
 The `Dataspace Protocol Specifications` (DSP) are based on the concept that all participants have a stable identifier.
-Software systems, or `participant agents,` act on behalf of participants to perform operations such as data sharing. In
+Software systems, or `participant agents`, act on behalf of participants to perform operations such as data sharing. In
 this scheme, participant agent identities may be ephemeral since all operations such as signing `contract agreements`
 are associated with the participant identity.
 
