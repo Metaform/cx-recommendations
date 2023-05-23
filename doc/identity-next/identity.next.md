@@ -1,9 +1,9 @@
-# Introduction
+# 1. Introduction
 
 This document provides a technical specification for how Tractus-X will support self-issued access tokens and verifiable
 credentials in conjunction with `Managed Identity Wallets` (MIW) for core data-sharing operations.
 
-### Requirements
+### 2. Requirements
 
 The following are the key requirements that inform this specification:
 
@@ -16,7 +16,7 @@ The following are the key requirements that inform this specification:
 
 A separate document will provide a technical design for implementing this specification in Tractus-X EDC.
 
-# Catena-X Identity
+# 3. Catena-X Identity
 
 The `Dataspace Protocol Specifications` (DSP) are based on the concept that all participants have a stable identifier.
 Software systems, or `participant agents,` act on behalf of participants to perform operations such as data sharing. In
@@ -38,7 +38,7 @@ participant may opt to change its hosting environment, resulting in a change to 
 its DID in the case of `did:web` or its DID method. Since its BPN remains stable, existing signed contracts will not be
 impacted.
 
-# Limitations
+# 4. Limitations
 
 The following will be technical limitations of the first milestone:
 
@@ -52,9 +52,9 @@ The following will be technical limitations of the first milestone:
 4. Only one proof scheme for Verifiable Presentations will be
    supported - [Ed25519Signature2020](https://w3c.github.io/vc-di-eddsa/#the-ed25519signature2020-suite).
 
-# Self-Issued Access Tokens
+# 5. Self-Issued Access Tokens
 
-## Self-Issued Token Format
+## 5.1. Self-Issued Token Format
 
 Access to resources is governed by tokens as explained in
 the [OAuth2 Specification - Accessing Protected Resources](https://datatracker.ietf.org/doc/html/rfc6749#section-7).
@@ -76,7 +76,7 @@ Namely:
 - All VPs must include a `challenge` as defined
   in  [Verifiable Credentials Implementation Guidelines 1.0](https://www.w3.org/TR/vc-imp-guide/#presentations)
 
-## Self-Issued Token Validation
+## 5.2. Self-Issued Token Validation
 
 - If the `iss` and `sub` claims are equal, the RP must evaluate the token as a self-issued token.
 - The `iss` claim must contain a `did:web` identifier
@@ -85,7 +85,7 @@ Namely:
   the `client_id` **using the key specified in the DID document**.
 - The RP must evaluate the `domain` and `challenge` in each VP.
 
-## Obtaining Verifiable Presentations
+## 5.3. Obtaining Verifiable Presentations
 
 Verifiable presentations can be obtained from a client-controlled endpoint termed a `wallet`. The wallet is responsible
 for generating the VP, including its proof, for a particular `domain`.
@@ -96,13 +96,13 @@ In the absence of a specification, the following endpoint definition will be use
 
 Note that the `domain` and `challenge` parameters are required and not optional.
 
-## Client Endpoints for Obtaining Verifiable Presentations
+## 5.4. Client Endpoints for Obtaining Verifiable Presentations
 
 This milestone will not support a protocol for RPs to obtain verifiable presentations from a client endpoint. In the
 future [OpenID for Verifiable Presentations](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) should
 be evaluated for suitability as this protocol.
 
-# DSP Policy
+# 6. DSP Policy
 
 DSP Policy will be used to advertise credential requirements in an interoperable way. Each policy must:
 
