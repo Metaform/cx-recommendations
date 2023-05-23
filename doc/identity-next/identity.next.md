@@ -24,7 +24,7 @@ this scheme, participant agent identities may be ephemeral since all operations 
 are associated with the participant identity.
 
 The fundamental stable identifier in Catena-X is the BPN. This specification will also make use of DIDs, which can be
-used to cryptographically verify a participant identity. These are related as follows:
+employed to cryptographically verify a participant identity. These are related as follows:
 
 ```
 BNP  ----- Can resolve to ----> DID
