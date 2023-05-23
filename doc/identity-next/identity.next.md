@@ -109,7 +109,7 @@ DSP Policy will be used to advertise credential requirements in an interoperable
 1. Be cryptographically tied to the BPN of the holder
 2. A policy must be associated with the Json-ld type of its corresponding Verifiable Credential. This may be done out of
    band.
-3. Policies will simple [ODRL contraints](https://www.w3.org/TR/odrl-model/#constraint) consisting of a left operator
+3. Policies will be simple [ODRL contraints](https://www.w3.org/TR/odrl-model/#constraint) consisting of a left operator
    that is a unique string key, an operand, and a right operator that may be an expression. The expression must be
    capable of being authored by business analysts and not be an executable expression. This is to ensure
    interoperability.
