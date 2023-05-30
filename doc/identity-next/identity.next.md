@@ -27,7 +27,7 @@ The fundamental stable identifier in Catena-X is the BPN. This specification wil
 employed to cryptographically verify a participant identity. These are related as follows:
 
 ```
-BNP  ----- Can resolve to ----> DID
+BPN  ----- Can resolve to ----> DID
  ^                                |
  |                                |
  |----------Associated with--------                               
@@ -72,9 +72,12 @@ Namely:
 - The `vp` claim must contain at least one Verifiable Presentation that attests the BPN specified in the `client_id`.
 - All VPs must be in the format specified by
   the [Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/)
-- All VPs must include a `domain` set to the BPN of the provider
-- All VPs must include a `challenge` as defined
-  in  [Verifiable Credentials Implementation Guidelines 1.0](https://www.w3.org/TR/vc-imp-guide/#presentations)
+
+> In the future when VP subject-signed proofs are supported, the following parameters will be required:
+> - All VPs must include a `domain` set to the BPN of the provider
+> - All VPs must include a `challenge` as defined
+    > in  [Verifiable Credentials Implementation Guidelines 1.0](https://www.w3.org/TR/vc-imp-guide/#presentations)
+    > **Note these parameters are not required for this release**
 
 ## 5.2. Self-Issued Token Validation
 
@@ -94,7 +97,53 @@ In the absence of a specification, the following endpoint definition will be use
 
 [Verifiable Credentials API v0.3](https://w3c-ccg.github.io/vc-api/#issue-credential)
 
-Note that the `domain` and `challenge` parameters are required and not optional.
+> In the future, for generating client-signed VP proofs, the `domain` and `challenge` parameters will be required and
+> not optional.
+
+### 5.3.1 The Verified Presentation
+
+The only supported proof type will
+be [Ed25519Signature2020](https://www.w3.org/community/reports/credentials/CG-FINAL-di-eddsa-2020-20220724/).
+
+VCs will be in the following format specified by in the
+[W3C VC Data Model example](https://www.w3.org/TR/vc-data-model/#example-usage-of-the-proof-property-on-a-verifiable-credential):
+
+```json
+
+{
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1"
+  ],
+  "id": "http://example.gov/credentials/3732",
+  "type": [
+    "VerifiableCredential",
+    "UniversityDegreeCredential"
+  ],
+  "issuer": "https://example.edu",
+  "issuanceDate": "2010-01-01T19:23:24Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "degree": {
+      "type": "BachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  },
+  "proof": {
+    "type": "Ed25519Signature2020",
+    "created": "2021-11-13T18:19:39Z",
+    "verificationMethod": "https://example.edu/issuers/14#key-1",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz"
+  }
+}
+```
+
+### 5.3.2 Subject Signed Proofs
+
+Subject-signed proofs will not be supported in this release. Instead, the self-issued token signature will be used as
+proof. This requires the VC subject and token subject to be the same. In addition, a VC linking the BPN number to the
+subject's DID must be present as a claim in the same authorization token.
 
 ## 5.4. Client Endpoints for Obtaining Verifiable Presentations
 
