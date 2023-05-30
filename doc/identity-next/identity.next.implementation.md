@@ -38,12 +38,9 @@ policy could be:
     {
       "action": "use",
       "constraint": {
-        "leftOperand": "cx:CX_DismantlerCredential.allowedVehicleBrands",
-        "operator": "in",
-        "rightOperand": [
-          "Brand A",
-          "Brand B"
-        ]
+        "leftOperand": "cx:CX_DismantlerCredential.allowedVehicleBrand",
+        "operator": "eq",
+        "rightOperand": "Brand A"
       }
     }
   ]

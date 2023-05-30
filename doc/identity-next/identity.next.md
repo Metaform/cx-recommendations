@@ -109,7 +109,6 @@ VCs will be in the following format specified by in the
 [W3C VC Data Model example](https://www.w3.org/TR/vc-data-model/#example-usage-of-the-proof-property-on-a-verifiable-credential):
 
 ```json
-
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
