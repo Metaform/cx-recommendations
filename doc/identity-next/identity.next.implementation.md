@@ -38,14 +38,35 @@ policy could be:
     {
       "action": "use",
       "constraint": {
-        "leftOperand": "cx:CX_DismantlerCredential",
+        "leftOperand": "cx:CX_DismantlerCredential.allowedVehicleBrands",
         "operator": "in",
-        "rightOperand": {
-          "cx:allowedVehicleBrands": [
-            "Brand A",
-            "Brand B"
-          ]
-        }
+        "rightOperand": [
+          "Brand A",
+          "Brand B"
+        ]
+      }
+    }
+  ]
+}
+```
+
+or
+
+```json
+{
+  "@context": {
+    "cx": "https://w3id.org/cx/v0.8/",
+    "@vocab": "http://www.w3.org/ns/odrl.jsonld"
+  },
+  "@type": "Offer",
+  "@id": "a343fcbf-99fc-4ce8-8e9b-148c97605aab",
+  "permission": [
+    {
+      "action": "use",
+      "constraint": {
+        "leftOperand": "cx:CX_DismantlerCredential.activityType",
+        "operator": "eq",
+        "rightOperand": "vehicleDismantle"
       }
     }
   ]
