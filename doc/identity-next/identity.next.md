@@ -49,15 +49,14 @@ The following will be technical limitations of the first milestone:
    practically limited to 8K by most web infrastructure, size constraints will impact VP design.
 3. The protocols described in this specification do not constitute a self-sovereign identity system (SSI) as key parts
    require hosted infrastructure.
-4. Only one proof scheme for Verifiable Presentations will be
-   supported - [Ed25519Signature2020](https://w3c.github.io/vc-di-eddsa/#the-ed25519signature2020-suite).
+4. Only one proof scheme for Verifiable Credentials will be
+   supported - [JSON Web Signature 2020](https://www.w3.org/community/reports/credentials/CG-FINAL-lds-jws2020-20220721/).
+
+> [OUTSTANDING] Define one supported **Verification Method**
 
 # 5. Self-Issued Access Tokens
 
 ## 5.1. Self-Issued Token Format
-
-Access to resources is governed by tokens as explained in
-the [OAuth2 Specification - Accessing Protected Resources](https://datatracker.ietf.org/doc/html/rfc6749#section-7).
 
 The contents of the self-issued token must correspond
 to [Open ID Connect Self-Issued Tokens](https://openid.net/specs/openid-connect-self-issued-v2-1_0.html#section-11)
@@ -79,6 +78,8 @@ Namely:
     > in  [Verifiable Credentials Implementation Guidelines 1.0](https://www.w3.org/TR/vc-imp-guide/#presentations)
     > **Note these parameters are not required for this release**
 
+> [OUTSTANDING] The `client_id` will not be set to the BPN. TBD what it will contain.
+
 ## 5.2. Self-Issued Token Validation
 
 - If the `iss` and `sub` claims are equal, the RP must evaluate the token as a self-issued token.
@@ -88,25 +89,14 @@ Namely:
   the `client_id` **using the key specified in the DID document**.
 - The RP must evaluate the `domain` and `challenge` in each VP.
 
-## 5.3. Obtaining Verifiable Presentations
+# 6. Verifiable Credentials and Presentations
 
-Verifiable presentations can be obtained from a client-controlled endpoint termed a `wallet`. The wallet is responsible
-for generating the VP, including its proof, for a particular `domain`.
-
-In the absence of a specification, the following endpoint definition will be used by the client to obtain a VP:
-
-[Verifiable Credentials API v0.3](https://w3c-ccg.github.io/vc-api/#issue-credential)
-
-> In the future, for generating client-signed VP proofs, the `domain` and `challenge` parameters will be required and
-> not optional.
-
-### 5.3.1 The Verified Presentation
-
-The only supported proof type will
-be [Ed25519Signature2020](https://www.w3.org/community/reports/credentials/CG-FINAL-di-eddsa-2020-20220724/).
+## 6.1. Format
 
 VCs will be in the following format specified by in the
 [W3C VC Data Model example](https://www.w3.org/TR/vc-data-model/#example-usage-of-the-proof-property-on-a-verifiable-credential):
+ 
+The follow is an example structure for VPs:
 
 ```json
 {
@@ -117,16 +107,13 @@ VCs will be in the following format specified by in the
   "id": "http://example.gov/credentials/3732",
   "type": [
     "VerifiableCredential",
-    "UniversityDegreeCredential"
+    "..."
   ],
   "issuer": "https://example.edu",
   "issuanceDate": "2010-01-01T19:23:24Z",
   "credentialSubject": {
     "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
-    "degree": {
-      "type": "BachelorDegree",
-      "name": "Bachelor of Science and Arts"
-    }
+    "...": {}
   },
   "proof": {
     "type": "Ed25519Signature2020",
@@ -138,19 +125,103 @@ VCs will be in the following format specified by in the
 }
 ```
 
-### 5.3.2 Subject Signed Proofs
+The only supported proof type will
+be [JSON Web Signature 2020](https://www.w3.org/community/reports/credentials/CG-FINAL-lds-jws2020-20220721/).
+
+> In the future, support may be required
+> for [Ed25519Signature2020](https://www.w3.org/community/reports/credentials/CG-FINAL-di-eddsa-2020-20220724/) (for
+> example, if GAIA-X uses it).
+
+
+## 6.2. Supported VPs and VC Types
+
+The VC schemas will be defined in the [Product Core Schemas repository](https://github.com/catenax-ng/product-core-schemas/tree/main).
+
+The following VCs will be required:
+
+**Note this may be changed to only support the Summary VP** 
+
+- **MembershipCredentialCX** - https://confluence.catena-x.net/display/CORE/Membership+Credential
+- **BpnCredentialCX** - https://confluence.catena-x.net/display/CORE/BPN+Credential
+- **DismantlerCredentialCX** - https://confluence.catena-x.net/display/CORE/Dismantler+Credential
+- **UseCaseFrameworkConditionCX**
+  - PCF - https://confluence.catena-x.net/display/CORE/PCF+Use+Case+Credential
+  - Quality - https://confluence.catena-x.net/pages/viewpage.action?spaceKey=CORE&title=Quality+Use+Case+Credential
+  - Resiliency - https://confluence.catena-x.net/display/CORE/Resiliency+Use+Case+Credential
+  - Sustainability - https://confluence.catena-x.net/display/CORE/Sustainability+Use+Case+Credential
+  - Trace - https://confluence.catena-x.net/display/CORE/Trace+Use+Case+Credential
+  - Behavior Twin - https://confluence.catena-x.net/display/CORE/Behavior+Twin+Use+Case+Credential
+
+### 6.2.3 Subject Signed Proofs
 
 Subject-signed proofs will not be supported in this release. Instead, the self-issued token signature will be used as
 proof. This requires the VC subject and token subject to be the same. In addition, a VC linking the BPN number to the
 subject's DID must be present as a claim in the same authorization token.
 
-## 5.4. Client Endpoints for Obtaining Verifiable Presentations
+## 6.3. Obtaining Verifiable Presentations
+
+Access to MIW resources requires an access token obtained from an OAUth2 compatible endpoint using the client
+credentials flow as explained in the [OAuth2 Specification](https://datatracker.ietf.org/doc/html/rfc6749#section-7).
+
+Verifiable presentations can be obtained from a client-controlled endpoint termed a `wallet`. The wallet is responsible
+for generating the VP, including its proof, for a particular `domain`.
+
+### 6.3.1. MIR Verifiable Presentations Endpoints
+
+The MIW will provide three endpoints that are relevant to the EDC:
+
+#### Query Verifiable Credentials
+`GET /api/credentials`
+
+This endpoint will return available VCs matching a set of criteria that can be used to create VPs.
+
+
+#### Create Verifiable Presentations
+`POST /api/presentations`
+
+This endpoint takes a list of VCs and generated a signed JWT containing VPs.
+
+#### Verify Credentials
+`POST /api/credentials/validations`
+
+This endpoint will validate VPs.
+
+
+## 6.3.1. Relying Party Endpoints for Obtaining Verifiable Presentations
 
 This milestone will not support a protocol for RPs to obtain verifiable presentations from a client endpoint. In the
 future [OpenID for Verifiable Presentations](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html) should
 be evaluated for suitability as this protocol.
+ 
+# 7. DIDs
 
-# 6. DSP Policy
+Only the `did:web` method will be supported. All DIDs will be resolved from the central MIW instance and therefore will be in the following format:
+
+`did:web:[miw url]:[bpn as indentifier]`
+
+The MIW will provide the following endpint for DID resolution:
+
+`api/didDocuments/(identifier}`
+
+DID documents will be in the following format:
+
+```json
+{
+  "@context": [],
+  "id": "did:web:miwurl:bpn",
+  "verificationMethod": {
+    "id": "did:web:miwurl:bpn",
+    "type": "JsonWebKey2020",
+    "publicKeyJwk": {
+      "kty": "JsonWebKey2020",
+      "crv": "Ed25519",
+      "x": "..."
+    }
+  }
+}
+```
+
+# 8. DSP Policy
 
 DSP Policy will be used to advertise credential requirements in an interoperable way. Each policy must:
 
