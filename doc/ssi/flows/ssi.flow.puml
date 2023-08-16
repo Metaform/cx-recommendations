@@ -1,0 +1,42 @@
+@startuml
+!pragma layout smetana
+
+!include ../../styles/diagram.styles.puml
+
+autonumber
+
+participant "Dataspace Authority" as I #FAFAFA
+participant "Client" as C
+participant "Client \nCredential Service \n(Hub)" as CS
+participant "Client \nSecure Token Service" as STS
+participant "Issuer Service(s)" as IS #FFF4B3
+participant "Provider" as P #E6F8E9
+
+group #FAFAFA Out-of-Band Bootstrap
+I -> C: BPN and Code
+end
+
+'#E6F8E9
+group #FFF4B3 Issuance Protocol
+C -> IS: Request Membership Credential \n using code
+group #E6F8E9 Verifiable Presentation Protocol
+IS -> CS: (async) )Write Membership Credential
+end
+C -> IS: Request other credentials using Membership Credential...
+end
+
+group #F3F7FF Base Identity Protocol
+C -> STS: Self-Issued ID token request
+STS -> C: Token response w/ access token
+C-> P: Request w/ Self-Issued ID token and access token
+
+group #E6F8E9 Verifiable Presentation Protocol
+P-> CS: Read VP request w/ access token
+CS ->P: VP response
+end
+
+P-> C: Response
+
+end
+
+@enduml

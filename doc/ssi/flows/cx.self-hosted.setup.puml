@@ -1,0 +1,34 @@
+@startuml
+!pragma layout smetana
+
+!include ../../styles/diagram.styles.puml
+
+autonumber
+
+title Self-Hosted Setup
+
+participant "Participant" as P
+participant "Participant \nConnector" as C
+participant "Participant \nHub" as H
+participant "Portal" as PORTAL #E6F8E9
+participant "Issuer Service(s)" as IS #FFF4B3
+
+group #E6F8E9 Self-Hosted Onboard Bootstrap
+P -> PORTAL: Application + DID
+PORTAL -> P: BPN and Secret Code
+end
+
+group #DADADA Internal Setup
+P -> C: Configure Connector with BPN
+P -> H: Create Hub participant context w/ BPN
+end
+
+group #FFF4B3 Issuance
+P -> H: Initiate Membership Credential Request with Secret Code
+H -> IS: Membership Credential Request with Secret Code
+IS -> H: Write Membership VC
+H -> IS: VC Requests...
+H -> P: Completion notification
+end
+
+@enduml

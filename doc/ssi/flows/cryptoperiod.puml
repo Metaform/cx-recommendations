@@ -1,0 +1,52 @@
+@startuml
+!pragma layout smetana
+
+!include ../../styles/diagram.styles.puml
+
+autonumber
+
+title Cryptoperiod Flow
+
+participant "Participant \nHub" as H
+participant "Participant \nConnector" as C
+participant "Issuer Service" as IS #FFF4B3
+participant "Issuer DID" as ISD #FFF4B3
+participant "Provider" as P #E6F8E9
+
+== Start Period ==
+group #DADADA Key Generation
+IS -> IS: Generate Key Pair 1
+IS -> IS: Add Public Key to DID
+end
+
+group #FFF4B3 Issuance
+H -> IS: VC request
+IS -> H: Write VC signed with Key 1
+end
+
+group #DADADA Key Rotation
+IS -> IS: Generate Key Pair 2
+IS -> IS: Destroy Private Key 1
+end
+
+group #E6F8E9 Data Exchange
+C -> P: Data Request
+P -> H: Resolve VC
+H -> P: VC
+P -> ISD: Resolve DID document to verify \nVC using Public Key 1
+ISD -> P: DID document
+end
+
+group #FFF4B3 Issuance
+IS -> H: VC offer (update)
+H -> IS: VC request
+IS -> H: Write VC signed with Key 2
+end
+
+group #DADADA Key Revocation
+IS -> IS: Revoke Key 1 \nby temoving all associated \nverificationMethods from DID document
+end
+
+== End Period ==
+
+@enduml
