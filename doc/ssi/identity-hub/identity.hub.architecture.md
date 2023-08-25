@@ -35,7 +35,7 @@ Two deployment topologies will be supported:
 
 A participant context (PC) functions as a unit of management and control for `identity resources` in the Identity Hub.
 All resources are contained and accessed through a PC. Contexts are tied to the participant identity as defined in
-the [DSP specifications]() and created through the IH Management API.
+the [DSP specifications]() and created through the [IH Management API](#311-elevated-privilege-operations).
 
 Access control for public client API endpoints is scoped to a specific PC. For example, an access token as defined in
 the [Base Identity Protocol specification]() is associated with a specific context and may not be used to access
