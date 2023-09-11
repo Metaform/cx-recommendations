@@ -53,10 +53,10 @@ participant. A `Verifiable Credential` (VC), `DID`, and `DID Document` are ident
 
 ### 2.2.1. Verifiable Credential Resources
 
-A `VerifiableCredentialResource` (VCR) is a type of `identity resource`:
+A `VerifiableCredentialResource` (VCR) is a type of `identity resource` and will be stored on the holder side:
 
 ```java
-class VerifiableCredentialResource implements IdentityResource {
+class VerifiableCredentialResource implements IdentityResource  {
     String id;
     long timestamp;
     VcState state;
@@ -68,6 +68,7 @@ class VerifiableCredentialResource implements IdentityResource {
 }
 ```
 
+
 The `issuerId` is a `URN`, typically a DID, that can be resolved to return the service endpoint of the Credential
 Issuer.
 
@@ -76,6 +77,17 @@ the VPP specification. They are used to determine which VCs or other prerequisit
 
 The `state` and `timestamp` fields are used to determine when the resource entered a particular state, for example, when
 the resource was requested.
+
+On the issuer the record for an already issued VC would look like this:
+```java
+class VerifiableCredentialRecord {
+    VcState state; // 
+    String credentialType; // what VC was issued
+    String holderId; //who the VC was issued to
+    long expiryDate; // when the VC will expire
+    Long renewalDateSent; // non-null if a credential offer request was sent  
+}
+```
 
 > The `issuerId` should be resolved using an EDC registry extension
 
