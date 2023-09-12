@@ -1,0 +1,46 @@
+@startuml
+!pragma layout smetana
+
+!include ../../styles/diagram.styles.puml
+
+hide stereotype
+
+skinparam component {
+  backgroundColor<<api module>> #9ee4aa
+  borderColor<<api module>> #185522
+  backgroundColor<<shared service>> #FFFFFF
+  backgroundColor<<shared lib>> Green
+}
+
+skinparam frame {
+   backgroundColor<<api module>> #1F6F2C
+}
+
+
+title Issuer Service Modules
+
+frame "APIs" {
+   component  "Issuance API" as HubApi <<api module>>
+   component "Management API" as ManagementApi <<api module>>
+}
+
+component "Aggregate Services Module" as AggregateServices
+
+
+component "KeyPairEventSinkModule" as KpeModule
+note top of KpeModule
+Accepts key rotation events and updates the Private Key alias
+end note
+frame "Libraries" {
+   component "Crypto Core Library" as CryptoCore <<shared service>>
+}
+
+component VcGeneratorModule as VcgModule
+
+
+AggregateServices -up-> HubApi
+AggregateServices -up-> ManagementApi
+
+
+
+@enduml
