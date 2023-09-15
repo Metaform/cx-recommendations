@@ -35,7 +35,7 @@ frame "Libraries" {
    component "Crypto Core Library" as CryptoCore <<shared service>>
 }
 
-component VcGeneratorModule as VcgModule
+component VcIssuanceModule as VcgModule
 
 
 AggregateServices -up-> HubApi
