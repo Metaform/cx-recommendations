@@ -21,7 +21,9 @@ the [credential type](https://github.com/eclipse-tractusx/ssi-docu/blob/main/doc
 e.g. `DismantlerCredential`. Therefore, in Tractus-X EDC we need to implement an extension that maps the credential
 type onto an access scope and vice versa.
 
-#### 1.b Subtask EDC: use OAuth2 to obtain Self-Issued ID Token from STS
+> In Tractus-X we already have something similar, we wil either reuse it or replace it.
+
+#### 1.b Subtask EDC: Implement `IdentityAndTrustService` - use OAuth2 to obtain Self-Issued ID Token from STS
 
 An identity service needs to be implemented (`IdentityAndTrustService` (ITS)), that requests the token from the STS (
 using basic OAuth flows), but on the verification side it follows the presentation protocol.
@@ -42,7 +44,7 @@ Trust Protocols spec.
 Requirements for the EDC implementation of the STS:
 
 - create a self-issued ID JWT token, that contains an `access_token` within
-- the `access_token` contains the aforementioned scopes as claims
+- the `access_token` contains the aforementioned scopes as claims, is signed with the STS private key
 - `sub` claim contains the provider's DID
 
 #### 2.c Subtask EDC: implement short-circuit, when STS is embedded in EDC
@@ -53,7 +55,9 @@ fallback.
 
 #### 2.d Subtask Tractus-X: adapt Helm charts to set the `edc.oauth.token.url` to MIW's Secure Token Service
 
-### 3. Connector: Implement mechanism to guard against token leakage
+> Note: 2.b - 2.d are independent and may be implemented later
+
+### 3. Connector: Implement proof-of-original-possession mechanism
 
 When the provider connector sends back the consumer's ID token, it needs to take measure against a potential
 leakage of that token such that the receiver (=consumer) can establish the provenance of the token. To that end, the
@@ -64,7 +68,7 @@ provider wraps the token in another token ("token-in-token"), signing it with it
 Obtain the consumer's public key from their DID document. The validation should follow basic OAuth2 rules. Reject the
 token if validation fails. _This is already implemented._
 
-#### 3.2 Subtask EDC: create TiT
+#### 3.2 Subtask EDC: create TiT using the STS
 
 The `IdentityAndTrustService` must generate the TiT (using STS) with the following parameters:
 
@@ -100,7 +104,7 @@ Implement basic glue code to expose the Resolution API. That includes:
 - Model class `PresentationQuery` + `JsonObjectToPresentationQueryTransformer`
 - Model class `VerifiablePresentation` + `JsonObjectFromVerifiablePresentationTransformer`
 
-#### 4.2 Subtask IdentityHub: Implement `TitVerifier` (working title)
+#### 4.2 Subtask IdentityHub: Implement `AccessTokenVerifier`
 
 Takes the incoming Token-in-token and performs a series of verifications on it. Resolving the provider's DID document
 and performing basic OAuth Token validation is equal to [3.1](#31-subtask-edc-validate-incoming-id-token-from-consumer),
@@ -112,7 +116,7 @@ but in addition, it performs these steps:
 - `access_token.sub` == `sub`: verify that the access token's `sub` claim equals the TiT's `sub` claim
 - assert that scope can be obtained from access_token
 
-The `TitVerifier` then returns the extracted scope, or an error result.
+The `AccessTokenVerifier` then returns the extracted scope, or an error result.
 
 #### 4.3 Subtask IdentityHub: Implement `PresentationQueryResolver`
 
@@ -124,9 +128,9 @@ following steps:
 - validate scopes: the "prover" scope may not be wider than the "issuer" scope
 - transform query: converts the "prover" scope into Credential types (using the inverse
   of [1.a](#1a-subtask-tractus-x-edc-map-credentialtype-to-scope)). Note that the scope has the credential format
-  encoded. A query that specifies VCs in different formats is invalid (homogeneity check).
-  See [section 5.1](#51-a-note-on-vcvp-formats) for details.
-- compose a `QuerySpec` based on those credential type(s).
+  encoded.
+- compose a `QuerySpec` based on those credential type(s). The `QuerySpec` is the canonical format to represent queries
+  internally.
 - execute query. Convert DB entities into a `List<VerifiableCredential>`
 
 ### 5. Connector: Implement VP Generator module
@@ -149,36 +153,32 @@ public interface PresentationGenerator {
 
 #### 5.1 A note on VC/VP formats
 
-Verifiable credentials and presentations are available in two formats, JSON-LD with linked proofs and as JWT. While it
-is theoretically possible to mix-and-match, the EDC IdentityHub will always generate "homogenous" VPs, i.e. all the VCs
-must be represented in the same format, and the `format` parameter must match that format.
+Verifiable credentials and presentations are available in two formats, JSON-LD with linked proofs and as JWT. It
+is possible to mix-and-match, the EDC IdentityHub will support both formats for VCs and VPs.
 
-Due to the homogeneity check performed in [query resolver](#43-subtask-identityhub-implement-presentationqueryresolver)
-it can be
-guaranteed that all credentials are of the same format.
+The `format` parameter specifies what format the VP should be in.
 
-However, if the `format` parameter is different from all the VCs' formats, the method would return a failure result.
-
-> Note 1: Initially, the `cryptoSuite` and `format` parameter will be ignored, and `Jws2020` and `JSON_LD` will be used
-> respectively.
+> Note 1: Initially, the `cryptoSuite` and `format` parameter throw a `UnsupportedOperationException` if anything other
+> than `Jws2020` and `JSON_LD` is passed, respectively.
 
 ### 6. Connector: Implement VP Validation module
 
 In EDC we already have a `CredentialsVerifier`, which takes a `DidDocument`. This may not be perfectly suitable here,
 because the input parameter type should be `VerifiablePresentation`.
 
-In EDC we will implement a class that:
+In EDC, we will implement a class that:
+
 - performs basic VP validation (proofs) etc. For that, the `CryptoSuite` should be used.
 - for every credential in the VP:
-  - validates `subjectId` of every VC: must match the consumer DID ("did the consumer only send their own VCs?")
-  - check credential against the revocation list
-  - check that issuer is in the list of [allowed issuers](#1-supporting-multiple-trusted-issuers)
-  - validates credential properties, i.e. that it contains the required information
-
+    - validates `subjectId` of every VC: must match the consumer DID ("did the consumer only send their own VCs?")
+    - check credential against the revocation list
+    - check that issuer is in the list of [allowed issuers](#1-supporting-multiple-trusted-issuers)
+    - validates credential properties, i.e. that it contains the required information
 
 ## The Issuance Flow
 
 TBD
 
 ## General implementation tasks
+
 ### 1. Supporting multiple trusted issuers
