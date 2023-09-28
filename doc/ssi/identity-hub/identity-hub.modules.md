@@ -1,12 +1,10 @@
 # Modules and services of the IdentityHub
 
-## Not in the IdentityHub
-
-`CredentialVerificationService`
+![module-overview](./identity.hub.modules.png)
 
 ## VC Module
 
-- contains the `PresentationCreationService` and the `CredentialStateMachine`
+- contains the `PresentationCreationService` and the `CredentialStateMachine`.<br/>
   Its job is to
     - generate and serve VPs (through the Hub API)
     - CRUD VCs, for example when the Issuer wants to write a VC via the Hub API
@@ -24,19 +22,20 @@ is triggered , it moves into the `REISSUE_REQUESTING` state. Renewals can be tri
 
 Contains the `DidResourceManager`. Its job is to
 
-- CRU(D) DIDs in the `DidResourceStore`
-- publish/overwrite DIDs using the publishers
-- reacts to events from the [KeyPair module](#keypair-module)
-- reacts to manual action via some management API
+- create/read/update(/delete) DID resources in the `DidResourceStore`
+- publish/overwrite DID documents using the publishers
+- react to key rotation events from the [KeyPair module](#keypair-module): adds new keys to the DID, removes old ones,
+  etc.
+- react to manual action via the management API
 
 ## KeyPair Module
 
 Contains the `KeyPairStateMachine`. Its job is to
 
 - generate and maintain key pairs using a state machine
-- checks for automatic renewal, e.g. if keys are configured with a max lifetime
+- check for automatic renewal, e.g. if keys are configured with a max lifetime
 - send out events when a key is rotated
-- reacts to manual action via some management API
+- react to manual action via the management API
 
 ## Auth/Permission Module
 
@@ -67,3 +66,26 @@ Clients must know their participant context, because they need to supply their p
 against the Hub's APIs.
 
 ## SPI Module
+
+all SPIs that are relevant here.
+
+## Hub API
+
+This module contains implementations for
+the [Resolution API](https://github.com/eclipse-tractusx/identity-trust/blob/main/specifications/M1/verifiable.presentation.protocol.md#4-resolution-api)
+and
+the [Storage API](https://github.com/eclipse-tractusx/identity-trust/blob/main/specifications/M1/verifiable.presentation.protocol.md#5-storage-api).
+Is
+contains model classes, validators and JSON-LD-transformers.
+
+## Management API
+
+This module contains implementations to maintain internal data structures, such as:
+- key pairs: get, rotate, revoke, set default (Caution: handling private keys through an API is DANGEROUS!)
+- DID documents: get, publish, un-publish
+- Credentials: create, read, update, delete
+- Participant Context: read. Create/Delete/Update requires elevated permissions! 
+
+## Not in the IdentityHub repo
+
+`CredentialVerificationService`
