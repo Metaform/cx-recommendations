@@ -101,11 +101,6 @@ enum VcState {
 }
 ```
 
-> NOTE: These states will also be used for the `CredentialIssuer`.
-
-> NOTE: We will need to define a `VerifiableCredential`. The existing one in the Identity Hub may service as a base. We
-> will need transformers for Json-Ld. The data type must handle extensible properties.
-
 #### 2.2.1.1 The VerifiableCredentialManager
 
 The `VerifiableCredentialManager` (VCM) manages `VerifiableCredentialResources` across participant contexts. For
@@ -459,30 +454,7 @@ The `crypto core library` is part of the core EDC and will be used by Identity H
 
 This module is part of the core EDC and will be used by Identity Hub services.
 
-# 4. CS Access Control Example
 
-```
-policyEngine.registerFunction(ALL_SCOPES, Permission.class, ACCESS_TOKEN_CONSTRAINT, (operator, value, permission, context) -> {
-    var token = context.getContextData(AccessToken.class);
-    var resourceRequest = context.getContextData(ResourceRequest.class);
-    if (EQ != operator || token == null || resourceRequest == null) {
-        // not supported or authorized
-        return false;
-    }
-    return token.scopes.stream().anyMatch(s -> {
-        if (!s.getAlias().equals(resourceRequest.getResourceType())) {
-            return false;
-        }
-        if (!WILDCARD.equals(s.getDiscriminator()) && !resourceRequest.getResourceName().equals(s.getDiscriminator())) {
-            return false;
-        }
-        if (WILDCARD.equals(s.getDiscriminator())) {
-            return true;
-        }
-        return READ == resourceRequest.getOperation() ? "read".equals(s.getOperation()) : "write".equals(s.getOperation());
-    });
-});
-```
 
 
 
